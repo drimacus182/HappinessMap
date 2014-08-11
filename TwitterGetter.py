@@ -5,6 +5,7 @@ def callb(item):
 class TwitterGetter(object):
 
     def __init__(self):
+        self.stop = False
         self.registerApi()
 
     @property
@@ -28,8 +29,10 @@ class TwitterGetter(object):
             #     print item['coordinates']['coordinates']
             self.callback(item)
 
+            if self.stop : break
+
     def stopFlow(self):
-        return
+        self.stop = True
 
 # Basic usage here:::
 
@@ -38,3 +41,4 @@ if __name__ == "__main__":
     tgetter.registerApi()
     tgetter.registerCallback(callb)
     tgetter.startFlow()
+    # then tgetter.stopFlow()
