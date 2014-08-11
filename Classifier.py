@@ -9,6 +9,7 @@ class Classifier(object):
             array=f.read().splitlines()
         return array
 
+
     # True if good, False if bad
     def classify(self, str):
         love = 0
