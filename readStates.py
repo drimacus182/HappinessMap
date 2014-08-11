@@ -7,9 +7,6 @@ def read_csv(fileName):
 
     return data
 
-def what_state(coordinates):
-    return
-
 if __name__ == "__main__":
     read_csv('states.csv')
 
