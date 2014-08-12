@@ -13,6 +13,7 @@ from twisted.internet import reactor
 timeout = 10.0
 
 def visualize(data):
+    print(data)
     # Lambert Conformal map of lower 48 states.
     m = Basemap(llcrnrlon=-119,llcrnrlat=22,urcrnrlon=-64,urcrnrlat=49,
     projection='lcc',lat_1=33,lat_2=45,lon_0=-95)
@@ -26,7 +27,7 @@ def visualize(data):
     colors={}
     statenames=[]
     cmap = plt.cm.jet # use 'jet' colormap
-    vmin = 0; vmax = 700 # set range.
+    vmin = 0; vmax = 400 # set range.
     for shapedict in m.states_info:
         statename = shapedict['NAME']
         # skip DC and Puerto Rico.
@@ -50,7 +51,7 @@ def visualize(data):
     m.drawmeridians(np.arange(-120,-40,20),labels=[0,0,0,1])
     plt.title('Happiness by states')
     plt.show(block=False)
-    plt.close('All')
+    plt.pause(2)
 
 happiness = {
     'New Jersey':  438.00,
@@ -106,8 +107,8 @@ happiness = {
 
 while(True):
     visualize(happiness)
-    for x,y in happiness.items():
-        happiness[y]=float(random.randrange(0,400,1))
-    print(happiness)
+    #for x in happiness.values():
+        #x=float(random.randrange(0,400,1))
+    happiness = dict((k, float(random.randrange(0,400,1))) for (k, v) in happiness.iteritems())
 
 
