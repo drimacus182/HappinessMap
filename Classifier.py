@@ -9,6 +9,8 @@ class Classifier(object):
             array=f.read().splitlines()
         return array
 
+    #todo if previous word is 'not' or 'n't' then invert meaning;
+    #todo if previous is 'really', 'very' then add one point (Intensifier page on wiki)
 
     # True if good, False if bad
     def classify(self, str):
@@ -28,3 +30,4 @@ class Classifier(object):
 if __name__ == "__main__":
     cl = Classifier('lists/lovelist.txt', 'lists/hatelist.txt')
     print cl.classify("The weather is awful")
+    print cl.classify("Oh god! I love them!!!")
