@@ -1,6 +1,12 @@
+from Classifier import Classifier
+
+cl = Classifier('lists/lovelist.txt', 'lists/hatelist.txt')
+
 def callb(item):
-    print item
-    return
+    str = item['text']
+    print str
+    print cl.classify(str)
+    print '\n'
 
 class TwitterGetter(object):
 
