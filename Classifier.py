@@ -22,7 +22,7 @@ class Classifier(object):
             hate += str.count(word)
 
         if (love + hate != 0) : return love - hate / (love + hate)
-        else: return 0;
+        else: return 0
 
 
 if __name__ == "__main__":
