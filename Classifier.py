@@ -27,7 +27,7 @@ class Classifier(object):
             # if c!= 0 : print 'hate: ' + word
             hate += str.count(word)
 
-        if (love + hate != 0) : return (love - hate) / (love + hate)
+        if (love + hate != 0) : return (float(love) - hate) / (love + hate)
         else: return 0;
 
 
