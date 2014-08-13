@@ -7,6 +7,7 @@ class Classifier(object):
     def read_file(self, filename):
         with open(filename) as f:
             array=f.read().splitlines()
+            array=[" " + x.upper() for x in array]
         return array
 
     #todo 'rip' matches on 'tripping' bug (just starting from)
@@ -15,21 +16,25 @@ class Classifier(object):
 
     # True if good, False if bad
     def classify(self, str):
+
+        pr_str = self.prepare_str(str)
         love = 0
         for word in self.lovedata:
             # c = str.count(word)
             # if c!= 0 : print 'love: ' + word
-            love += str.count(word)
+            love += pr_str.count(word)
 
         hate = 0
         for word in self.hatedata:
             # c = str.count(word)
             # if c!= 0 : print 'hate: ' + word
-            hate += str.count(word)
+            hate += pr_str.count(word)
 
-        if (love + hate != 0) : return (love - hate) / (love + hate)
+        if (love + hate != 0) : return (float(love) - hate) / (love + hate)
         else: return 0;
 
+    def prepare_str(self, str):
+        return " " + str.upper()
 
 if __name__ == "__main__":
     cl = Classifier('lists/lovelist.txt', 'lists/hatelist.txt')
