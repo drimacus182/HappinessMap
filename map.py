@@ -2,6 +2,7 @@ from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import random
 from mpl_toolkits.basemap import Basemap as Basemap
 from matplotlib.colors import rgb2hex
 from matplotlib.patches import Polygon
@@ -9,9 +10,10 @@ from matplotlib.patches import Polygon
 from twisted.internet import task
 from twisted.internet import reactor
 
-timeout = 10.0 # Sixty seconds
+timeout = 10.0
 
-def doWork():
+def visualize(data):
+    print(data)
     # Lambert Conformal map of lower 48 states.
     m = Basemap(llcrnrlon=-119,llcrnrlat=22,urcrnrlon=-64,urcrnrlat=49,
     projection='lcc',lat_1=33,lat_2=45,lon_0=-95)
@@ -21,7 +23,37 @@ def doWork():
     shp_info = m.readshapefile('st99_d00','states',drawbounds=True)
     # population density by state from
     # http://en.wikipedia.org/wiki/List_of_U.S._states_by_population_density
-    happiness = {
+    # choose a color for each state based on population density.
+    colors={}
+    statenames=[]
+    cmap = plt.cm.jet # use 'jet' colormap
+    vmin = 0; vmax = 400 # set range.
+    for shapedict in m.states_info:
+        statename = shapedict['NAME']
+        # skip DC and Puerto Rico.
+        if statename not in ['District of Columbia','Puerto Rico']:
+            hap = data[statename]
+            # calling colormap with value between 0 and 1 returns
+            # rgba value.  Invert color range (hot colors are high
+            # population), take sqrt root to spread out colors more.
+            colors[statename] = cmap(1.-np.sqrt((hap-vmin)/(vmax-vmin)))[:3]
+        statenames.append(statename)
+    # cycle through state names, color each one.
+    ax = plt.gca() # get current axes instance
+    for nshape,seg in enumerate(m.states):
+        # skip DC and Puerto Rico.
+        if statenames[nshape] not in ['District of Columbia','Puerto Rico']:
+            color = rgb2hex(colors[statenames[nshape]])
+            poly = Polygon(seg,facecolor=color,edgecolor=color)
+            ax.add_patch(poly)
+    # draw meridians and parallels.
+    m.drawparallels(np.arange(25,65,20),labels=[1,0,0,0])
+    m.drawmeridians(np.arange(-120,-40,20),labels=[0,0,0,1])
+    plt.title('Happiness by states')
+    plt.show(block=False)
+    plt.pause(2)
+
+happiness = {
     'New Jersey':  438.00,
     'Rhode Island':   387.35,
     'Massachusetts':   312.68,
@@ -72,40 +104,11 @@ def doWork():
     'Montana':     2.39,
     'Wyoming':      1.96,
     'Alaska':     0.42}
-    print(shp_info)
-    # choose a color for each state based on population density.
-    colors={}
-    statenames=[]
-    cmap = plt.cm.hot # use 'hot' colormap
-    vmin = 0; vmax = 700 # set range.
-    print(m.states_info[0].keys())
-    for shapedict in m.states_info:
-        statename = shapedict['NAME']
-        # skip DC and Puerto Rico.
-        if statename not in ['District of Columbia','Puerto Rico']:
-            hap = happiness[statename]
-            # calling colormap with value between 0 and 1 returns
-            # rgba value.  Invert color range (hot colors are high
-            # population), take sqrt root to spread out colors more.
-            colors[statename] = cmap(1.-np.sqrt((hap-vmin)/(vmax-vmin)))[:3]
-        statenames.append(statename)
-    # cycle through state names, color each one.
-    ax = plt.gca() # get current axes instance
-    for nshape,seg in enumerate(m.states):
-        # skip DC and Puerto Rico.
-        if statenames[nshape] not in ['District of Columbia','Puerto Rico']:
-            color = rgb2hex(colors[statenames[nshape]])
-            poly = Polygon(seg,facecolor=color,edgecolor=color)
-            ax.add_patch(poly)
-    # draw meridians and parallels.
-    m.drawparallels(np.arange(25,65,20),labels=[1,0,0,0])
-    m.drawmeridians(np.arange(-120,-40,20),labels=[0,0,0,1])
-    plt.title('Happiness by states')
-    plt.show()
-    pass
 
-l = task.LoopingCall(doWork)
-l.start(timeout) # call every sixty seconds
+while(True):
+    visualize(happiness)
+    #for x in happiness.values():
+        #x=float(random.randrange(0,400,1))
+    happiness = dict((k, float(random.randrange(0,400,1))) for (k, v) in happiness.iteritems())
 
-reactor.run()
 
